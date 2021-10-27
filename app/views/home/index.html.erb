@@ -1,4 +1,95 @@
-<% name = current_user.present? ? current_user.email : 'Stranger' %>
-
-<h1>Welcome, <%= name %> </h1>
-<p>Find me in app/views/home/index.html.erb</p>
+    <div class="container">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h2>Uploaded File Dashboard </h2>
+                    </div>
+                     <div class="col-sm-4">
+                        <%= form_with(url: '/', method: 'get') do |f| %>
+                            <%= f.text_field :hint,placeholder: 'Search' %>
+                            <%= f.submit("Search")%>
+                        <% end %>
+                    </div>
+                    <div class="col-sm-3">
+                        <%= form_for(:user, url: 'file/attach') do |f| %>
+                              <div class="custom-file add-new">
+                                <%= f.label :file, class:"custom-file-label" do %>Upload File
+                                    <%= f.file_field :file, class: 'custom-file-input', 
+                                        onchange: "this.form.submit();" %>
+                                <% end %>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+            </div>
+            <% if @files.any? %>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th><%= link_to "File Name", :sort => "name"%> </th>
+                            <th><%= link_to "Uploaded Date", :sort => "created_at"%> </th>
+                            <th><%= link_to "Size", :sort => "size"%> </th>
+                            <th>Actions</th>
+                            <th>Sharing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @files.each do |file| %>
+                            <tr>
+                                <td><%= file.filename %></td>
+                                <td><%= file.created_at.strftime("%-d %b %Y %H:%M") %></td>
+                                <td><%= file_size_verbose file.byte_size %></td>
+                                <td>
+                                    <%= link_to 'Download', "#{get_url(file)}", download: '' %> |&nbsp;
+                                    <%= link_to 'Delete', file_delete_path(file: file), :data => { :confirm => 'Are you sure?' }, method: "delete"%>
+                                </td>
+                                <td>
+                                    <%= link_to 'Share Link', "#{get_url(file)}"%>| <%= link_to 'Send File', share_new_path(file: file)%>
+                                </td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            <% else %>
+                <h3>No Files</h3>
+            <% end %>
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h2> Shared Files Dashboard</h2>
+                    </div>
+                </div>
+            </div>
+            <% if @shared_files.any? %>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th><%= link_to "File Name", :share_sort => "name"%> </th>
+                            <th><%= link_to "Shared On", :share_sort => "created_at"%> </th>
+                            <th><%= link_to "Size", :share_sort => "size"%> </th>
+                            <th>Actions</th>
+                            <th>Shared_by</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @shared_files.each do |file| %>
+                            <tr>
+                                <td><%= file.filename %></td>
+                                <td><%= file.created_at.strftime("%-d %b %Y %H:%M") %></td>
+                                <td><%= file_size_verbose file.byte_size %></td>
+                                <td>
+                                    <%= link_to 'Download', get_shared_url(file.user_id, file.file_id), download: '' %> |&nbsp; 
+                                    <%= link_to 'Delete', share_delete_path(file: file), :data => { :confirm => 'Are you sure?' }, method: "delete"%>
+                                </td>
+                                <td><%= file.email %></td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+             <% else %>
+                <h3>No Shared Files</h3>
+            <% end %>
+        </div>
+    </div>    
