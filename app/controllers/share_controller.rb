@@ -1,7 +1,7 @@
 class ShareController < ApplicationController
   def create
     user = User.find_by(email: params[:email])
-    file = current_user.files.find_by(id: params[:file]) if params[:file].present?
+    file = current_user.files.find(params[:file]) if params[:file].present?
 
     if user.present? && file.present? && user != current_user
       shared_file = SharedFileAssociation.find_by(user_id: current_user.id,
@@ -15,6 +15,8 @@ class ShareController < ApplicationController
                           file_id: file.id
                         )
       end
+      ShareMailer.with(user: current_user, shared_user: user,filename: file.filename.to_s, link: 'http://localhost:3000/').share_file.deliver_later
+
       if shared_file.errors.present?
         flash[:notice] = 'File sharing Unsuccessfull'
       else
