@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   get 'share/new'
-  root to: "home#index"
+  root to: "blobs#index"
   devise_for :users
+
+  resources :blobs
 
   post 'file/attach' => 'file#attach'
   delete 'file/delete' => 'file#delete'

@@ -6,8 +6,8 @@
                         <h2>Uploaded File Dashboard </h2>
                     </div>
                      <div class="col-sm-4">
-                        <%= form_with(url: '/', method: 'get') do |f| %>
-                            <%= f.text_field :hint,placeholder: 'Search' %>
+                        <%= search_form_for @q do |f| %>
+                            <%= f.search_field :filename_cont, placeholder: 'Search' %>
                             <%= f.submit("Search")%>
                         <% end %>
                     </div>
@@ -23,13 +23,13 @@
                     </div>
                 </div>
             </div>
-            <% if @files.any? %>
+            <% if @files.present? && @files.any? %>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th><%= link_to "File Name", :sort => "name"%> </th>
-                            <th><%= link_to "Uploaded Date", :sort => "created_at"%> </th>
-                            <th><%= link_to "Size", :sort => "size"%> </th>
+                            <th><%= sort_link(@q, :filename) %></th>
+                            <th><%= sort_link(@q, :created_at, "Uploaded At") %></th>
+                            <th><%= sort_link(@q, :bytesize, "Size") %> </th>
                             <th>Actions</th>
                             <th>Sharing</th>
                         </tr>
@@ -61,13 +61,13 @@
                     </div>
                 </div>
             </div>
-            <% if @shared_files.any? %>
+            <% if @shared_files.present? && @shared_files.any? %>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th><%= link_to "File Name", :share_sort => "name"%> </th>
-                            <th><%= link_to "Shared On", :share_sort => "created_at"%> </th>
-                            <th><%= link_to "Size", :share_sort => "size"%> </th>
+                            <th>Filename </th>
+                            <th>Shared On </th>
+                            <th>Size </th>
                             <th>Actions</th>
                             <th>Shared_by</th>
                             
