@@ -5,6 +5,7 @@ class FileController < ApplicationController
     if file.size < 10.megabytes
       if current_user.files.attach(file)
         flash[:notice] = 'File uploaded Successfully'
+        ActiveStorageBlob.reindex
       else
         flash[:notice] = 'File uploading Unsuccessfull'
       end
@@ -20,6 +21,7 @@ class FileController < ApplicationController
       file.purge
       current_user.shared_file_associations.where(file_id: 1).destroy_all
       flash[:notice] = 'File Deleted Successfully'
+      ActiveStorageBlob.reindex
     else
       flash[:notice] = 'File Deletion Unsuccessfull'
     end

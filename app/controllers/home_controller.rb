@@ -1,9 +1,8 @@
 class HomeController < ApplicationController
   def index
-    @files = current_user.files
-            .joins(:blob).where('filename LIKE ?', "#{params[:hint]}%")
-            .includes(:blob)
-            .select("active_storage_attachments.*")
+    hint = params[:hint].present? ? params[:hint] : '*'
+    file_ind = ActiveStorageBlob.search(hint).map{|file| file.id}
+    @files = current_user.files.blobs.where(id: file_ind)
 
     case params[:sort]
     when 'created_at'
